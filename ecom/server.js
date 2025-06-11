@@ -1599,6 +1599,13 @@ app.get('/product/:id', async (req, res) => {
         if (!product) {
             return res.status(404).send('Product not found');
         }
+
+        // Check if product has age ranges (like "5-6") or just standard sizes
+        const hasAgeRanges = product.sizePrices.some(sp => sp.size.match(/^\d+-\d+$/));
+        const minQuantity = hasAgeRanges ? 5 : 1;
+        const quantityMessage = hasAgeRanges ? 
+            'Minimum order quantity is 5 items. Please add more items to proceed.' : 
+            'Please select at least one size';
         
         res.send(`
             <!DOCTYPE html>
@@ -1744,13 +1751,15 @@ app.get('/product/:id', async (req, res) => {
                                         <input type="hidden" name="productId" value="${product._id}">
                                         <input type="hidden" name="productName" value="${product.name}">
                                         <input type="hidden" name="mrp" value="${product.mrp}">
+                                        <input type="hidden" id="minQuantity" value="${minQuantity}">
                                         
                                         <!-- Size and Quantity Selection -->
                                         <div class="mb-4 shop-table">
                                             <h5>Select Sizes and Quantities</h5>
-                                            <p class="text-danger d-none" id="sizeError">Please select at least one size</p>
+                                            <p class="text-danger d-none" id="sizeError">${quantityMessage}</p>
                                             
                                             <!-- Age Sizes Dropdown -->
+                                            ${product.sizePrices.filter(sp => sp.size.match(/^\d+-\d+$/)).length > 0 ? `
                                             <div class="size-dropdown" id="ageSizesDropdown">
                                                 <div class="size-dropdown-header" onclick="toggleDropdown('ageSizesDropdown')">
                                                     <span>Ages</span>
@@ -1796,8 +1805,10 @@ app.get('/product/:id', async (req, res) => {
                                                     </div>
                                                 </div>
                                             </div>
+                                            ` : ''}
                                             
                                             <!-- Standard Sizes Dropdown -->
+                                            ${product.sizePrices.filter(sp => !sp.size.match(/^\d+-\d+$/)).length > 0 ? `
                                             <div class="size-dropdown" id="standardSizesDropdown">
                                                 <div class="size-dropdown-header" onclick="toggleDropdown('standardSizesDropdown')">
                                                     <span>Sizes</span>
@@ -1843,6 +1854,7 @@ app.get('/product/:id', async (req, res) => {
                                                     </div>
                                                 </div>
                                             </div>
+                                            ` : ''}
                                             
                                             <div class="d-flex justify-content-end mt-2">
                                                 <strong>Subtotal: </strong>
@@ -1914,6 +1926,7 @@ app.get('/product/:id', async (req, res) => {
                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
                 <script>
                     let selectedSizes = {};
+                    let totalQuantity = 0;
                     
                     function changeMainImage(src) {
                         document.getElementById('mainProductImage').src = src;
@@ -1927,11 +1940,24 @@ app.get('/product/:id', async (req, res) => {
                     }
                     
                     function validateForm() {
+                        const minQuantity = parseInt(document.getElementById('minQuantity').value);
+                        
                         if (Object.keys(selectedSizes).length === 0) {
                             document.getElementById('sizeError').classList.remove('d-none');
+                            document.getElementById('sizeError').textContent = 'Please select at least one size';
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                             return false;
                         }
+                        
+                        if (totalQuantity < minQuantity) {
+                            document.getElementById('sizeError').classList.remove('d-none');
+                            document.getElementById('sizeError').textContent = minQuantity === 5 ? 
+                                'Minimum order quantity is 5 items. Please add more items to proceed.' : 
+                                'Please select at least one size';
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                            return false;
+                        }
+                        
                         return true;
                     }
                     
@@ -1939,16 +1965,32 @@ app.get('/product/:id', async (req, res) => {
                         const quantity = parseInt(input.value) || 0;
                         const size = input.name.replace('quantity_', '');
                         const totalCell = input.closest('tr').querySelector('.sizeTotal');
+                        const minQuantity = parseInt(document.getElementById('minQuantity').value);
                         
+                        // Update total quantity
                         if (quantity > 0) {
+                            if (selectedSizes[size]) {
+                                totalQuantity -= selectedSizes[size].quantity;
+                            }
                             selectedSizes[size] = { price, quantity };
+                            totalQuantity += quantity;
                             totalCell.textContent = '₹' + (price * quantity);
                             document.getElementById('sizeError').classList.add('d-none');
                         } else {
+                            if (selectedSizes[size]) {
+                                totalQuantity -= selectedSizes[size].quantity;
+                            }
                             delete selectedSizes[size];
                             totalCell.textContent = '₹0';
+                            
                             if (Object.keys(selectedSizes).length === 0) {
                                 document.getElementById('sizeError').classList.remove('d-none');
+                                document.getElementById('sizeError').textContent = 'Please select at least one size';
+                            } else if (totalQuantity < minQuantity) {
+                                document.getElementById('sizeError').classList.remove('d-none');
+                                document.getElementById('sizeError').textContent = minQuantity === 5 ? 
+                                    'Minimum order quantity is 5 items. Please add more items to proceed.' : 
+                                    'Please select at least one size';
                             }
                         }
                         
@@ -1980,6 +2022,20 @@ app.get('/product/:id', async (req, res) => {
                         
                         document.getElementById('totalPrice').textContent = '₹' + total;
                     }
+                    
+                    // Initialize dropdowns if they exist
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const ageSizes = ${product.sizePrices.filter(sp => sp.size.match(/^\d+-\d+$/)).length > 0};
+                        const standardSizes = ${product.sizePrices.filter(sp => !sp.size.match(/^\d+-\d+$/)).length > 0};
+                        
+                        if (ageSizes && standardSizes) {
+                            // If both exist, open one by default
+                            toggleDropdown('ageSizesDropdown');
+                        } else if (ageSizes || standardSizes) {
+                            // If only one exists, open it
+                            toggleDropdown(ageSizes ? 'ageSizesDropdown' : 'standardSizesDropdown');
+                        }
+                    });
                 </script>
             </body>
             </html>
