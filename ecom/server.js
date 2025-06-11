@@ -4377,6 +4377,7 @@ app.get('/admin/add-product', (req, res) => {
                                 <option value="9-10">9-10</option>
                                 <option value="11-12">11-12</option>
                                 <option value="13-14">13-14</option>
+<option value="S">S</option>
                                 <option value="M">M</option>
                                 <option value="L">L</option>
                                 <option value="XL">XL</option>
@@ -4811,6 +4812,8 @@ app.get('/admin/edit-product/:id', async (req, res) => {
                                     <option value="9-10">9-10</option>
                                     <option value="11-12">11-12</option>
                                     <option value="13-14">13-14</option>
+<option value="S">
+S</option>
                                     <option value="M">M</option>
                                     <option value="L">L</option>
                                     <option value="XL">XL</option>
