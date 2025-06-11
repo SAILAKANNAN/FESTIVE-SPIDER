@@ -17,6 +17,7 @@ app.use(express.static('public'));
 
 // Database connection
 mongoose.connect('mongodb+srv://festivespiderwebsite:kanna2006@cluster0.fbu0dvp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+// mongoose.connect('mongodb://localhost:27017/ecommerce', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
@@ -1609,15 +1610,8 @@ app.get('/product/:id', async (req, res) => {
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
                 <style>
-                    .design-option { cursor: pointer; transition: all 0.3s; margin-bottom: 10px; position: relative; }
-                    .design-option:hover { transform: scale(1.05); }
-                    .design-option.selected { border: 3px solid #0d6efd !important; }
-                    .custom-img-container { position: relative; display: inline-block; }
-                    .custom-img-close { position: absolute; top: -10px; right: -10px; background: red; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; }
-                    .quantity-btn { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; }
                     .product-thumbnail { cursor: pointer; border: 1px solid #dee2e6; transition: all 0.3s; }
                     .product-thumbnail:hover, .product-thumbnail.active { border-color: #0d6efd; }
-                    .customization-section { display: none; }
                     .nav-bg { background-color: #2c3e50; }
                     .footer-bg { background-color: #2c3e50; }
                     .btn-checkout { background-color: #28a745; }
@@ -1625,75 +1619,57 @@ app.get('/product/:id', async (req, res) => {
                     .original-price { text-decoration: line-through; color: #6c757d; }
                     .discount-badge { background-color: #dc3545; }
                     
-                    /* Zoom icon styles */
-                    .zoom-icon { 
-                        position: absolute; 
-                        top: 5px; 
-                        right: 5px; 
-                        background: rgba(0,0,0,0.5); 
-                        color: white; 
-                        border-radius: 50%; 
-                        width: 25px; 
-                        height: 25px; 
-                        display: flex; 
-                        align-items: center; 
-                        justify-content: center; 
-                        opacity: 0; 
-                        transition: opacity 0.3s;
-                        z-index: 5;
+                    /* Size dropdown styles */
+                    .size-dropdown {
+                        margin-bottom: 15px;
+                        border: 1px solid #dee2e6;
+                        border-radius: 5px;
+                        overflow: hidden;
                     }
-                    .design-option:hover .zoom-icon { opacity: 1; }
+                    .size-dropdown-header {
+                        padding: 10px 15px;
+                        background-color: #f8f9fa;
+                        cursor: pointer;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        font-weight: bold;
+                    }
+                    .size-dropdown-header:hover {
+                        background-color: #e9ecef;
+                    }
+                    .size-dropdown-content {
+                        padding: 15px;
+                        background-color: white;
+                        display: none;
+                    }
+                    .size-dropdown.active .size-dropdown-content {
+                        display: block;
+                    }
+                    .size-dropdown-toggle {
+                        transition: transform 0.3s;
+                    }
+                    .size-dropdown.active .size-dropdown-toggle {
+                        transform: rotate(180deg);
+                    }
                     
-                    /* Image preview modal */
-                    .image-preview-modal { 
-                        display: none; 
-                        position: fixed; 
-                        top: 0; 
-                        left: 0; 
-                        width: 100%; 
-                        height: 100%; 
-                        background: rgba(0,0,0,0.8); 
-                        z-index: 1000; 
-                        justify-content: center; 
-                        align-items: center; 
-                    }
-                    .image-preview-content { 
-                        position: relative; 
-                        max-width: 90%; 
-                        max-height: 90%; 
-                        background: white; 
-                        padding: 15px; 
-                        border-radius: 5px; 
-                    }
-                    .image-preview-close { 
-                        position: absolute; 
-                        top: -15px; 
-                        right: -15px; 
-                        background: red; 
-                        color: white; 
-                        border-radius: 50%; 
-                        width: 30px; 
-                        height: 30px; 
-                        display: flex; 
-                        align-items: center; 
-                        justify-content: center; 
-                        cursor: pointer; 
-                        z-index: 1001;
-                    }
-                    .image-preview-img { 
-                        max-width: 100%; 
-                        max-height: 80vh; 
-                        object-fit: contain; 
-                    }
-                    .resize-handle {
-                        position: absolute;
-                        right: -10px;
-                        bottom: -10px;
-                        width: 20px;
-                        height: 20px;
-                        background: #0d6efd;
-                        cursor: nwse-resize;
-                        z-index: 1002;
+                    /* Responsive adjustments */
+                    @media (max-width: 576px) {
+                        .quantity-input {
+                            width: 45px !important;
+                            font-size: 0.8rem;
+                        }
+                        .btn-sm {
+                            font-size: 0.7rem;
+                            padding: 2px 6px;
+                        }
+                        .table td, .table th {
+                            padding: 0.4rem;
+                            font-size: 0.8rem;
+                        }
+                        .shop-table h5 {
+                            font-size: 1rem;
+                        }
                     }
                 </style>
             </head>
@@ -1756,9 +1732,7 @@ app.get('/product/:id', async (req, res) => {
                                     <p class="text-muted">Category: ${product.category}</p>
                                     
                                     <div class="d-flex align-items-center mb-3">
-                                        
                                         <span class="badge discount-badge text-white me-2">${product.offerPercentage}% OFF</span>
-                                  
                                     </div>
                                     
                                     <div class="mb-4">
@@ -1772,280 +1746,108 @@ app.get('/product/:id', async (req, res) => {
                                         <input type="hidden" name="mrp" value="${product.mrp}">
                                         
                                         <!-- Size and Quantity Selection -->
-                                        <div class="mb-4">
+                                        <div class="mb-4 shop-table">
                                             <h5>Select Sizes and Quantities</h5>
                                             <p class="text-danger d-none" id="sizeError">Please select at least one size</p>
-                                           <style>
-  /* Additional Mobile-Specific Adjustments */
-  @media (max-width: 576px) {
-    .quantity-input {
-      width: 45px !important;
-      font-size: 0.8rem;
-    }
-
-    .btn-sm {
-      font-size: 0.7rem;
-      padding: 2px 6px;
-    }
-
-    .table td, .table th {
-      padding: 0.4rem;
-      font-size: 0.8rem;
-    }
-
-    .shop-table h5 {
-      font-size: 1rem;
-    }
-  }
-</style>
-
-<div class="mb-4 shop-table">
-  
-  <p class="text-danger d-none" id="sizeError">Please select at least one size</p>
-
-  <div class="table-responsive">
-    <table class="table table-bordered align-middle text-center" id="sizeTable">
-      <thead class="table-light">
-        <tr>
-          <th>Size</th>
-          <th>Price</th>
-          <th style="min-width: 120px;">Quantity</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${product.sizePrices.map(sp => `
-          <tr>
-            <td>${sp.size}</td>
-            <td>₹${sp.price}</td>
-            <td>
-              <div class="d-flex justify-content-center align-items-center flex-nowrap gap-1">
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="changeQuantity(this, -1, ${sp.price})">−</button>
-                <input 
-                  type="number" 
-                  class="form-control form-control-sm text-center quantity-input" 
-                  name="quantity_${sp.size}" 
-                  min="0" 
-                  value="0" 
-                  style="width: 60px;" 
-                  onchange="updateSizeTotal(this, ${sp.price})">
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="changeQuantity(this, 1, ${sp.price})">+</button>
-              </div>
-            </td>
-            <td class="sizeTotal" data-price="${sp.price}">₹0</td>
-            <input type="hidden" name="size_${sp.size}" value="${sp.size}">
-            <input type="hidden" name="price_${sp.size}" value="${sp.price}">
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<script>
-  function updateSizeTotal(input, price) {
-    var quantity = parseInt(input.value) || 0;
-    var totalCell = input.closest('tr').querySelector('.sizeTotal');
-    totalCell.textContent = '₹' + (quantity * price);
-  }
-
-  function changeQuantity(button, delta, price) {
-    var input = button.parentElement.querySelector('.quantity-input');
-    var current = parseInt(input.value) || 0;
-    current += delta;
-    if (current < 0) current = 0;
-    input.value = current;
-    updateSizeTotal(input, price);
-  }
-</script>
-
+                                            
+                                            <!-- Age Sizes Dropdown -->
+                                            <div class="size-dropdown" id="ageSizesDropdown">
+                                                <div class="size-dropdown-header" onclick="toggleDropdown('ageSizesDropdown')">
+                                                    <span>Ages</span>
+                                                    <i class="fas fa-chevron-down size-dropdown-toggle"></i>
+                                                </div>
+                                                <div class="size-dropdown-content">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered align-middle text-center">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th>Age</th>
+                                                                    <th>Price</th>
+                                                                    <th style="min-width: 120px;">Quantity</th>
+                                                                    <th>Total</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                ${product.sizePrices.filter(sp => sp.size.match(/^\d+-\d+$/)).map(sp => `
+                                                                    <tr>
+                                                                        <td>${sp.size}</td>
+                                                                        <td>₹${sp.price}</td>
+                                                                        <td>
+                                                                            <div class="d-flex justify-content-center align-items-center flex-nowrap gap-1">
+                                                                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="changeQuantity(this, -1, ${sp.price})">−</button>
+                                                                                <input 
+                                                                                    type="number" 
+                                                                                    class="form-control form-control-sm text-center quantity-input" 
+                                                                                    name="quantity_${sp.size}" 
+                                                                                    min="0" 
+                                                                                    value="0" 
+                                                                                    style="width: 60px;" 
+                                                                                    onchange="updateSizeTotal(this, ${sp.price})">
+                                                                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="changeQuantity(this, 1, ${sp.price})">+</button>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="sizeTotal" data-price="${sp.price}">₹0</td>
+                                                                        <input type="hidden" name="size_${sp.size}" value="${sp.size}">
+                                                                        <input type="hidden" name="price_${sp.size}" value="${sp.price}">
+                                                                    </tr>
+                                                                `).join('')}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Standard Sizes Dropdown -->
+                                            <div class="size-dropdown" id="standardSizesDropdown">
+                                                <div class="size-dropdown-header" onclick="toggleDropdown('standardSizesDropdown')">
+                                                    <span>Sizes</span>
+                                                    <i class="fas fa-chevron-down size-dropdown-toggle"></i>
+                                                </div>
+                                                <div class="size-dropdown-content">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered align-middle text-center">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th>Size</th>
+                                                                    <th>Price</th>
+                                                                    <th style="min-width: 120px;">Quantity</th>
+                                                                    <th>Total</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                ${product.sizePrices.filter(sp => !sp.size.match(/^\d+-\d+$/)).map(sp => `
+                                                                    <tr>
+                                                                        <td>${sp.size}</td>
+                                                                        <td>₹${sp.price}</td>
+                                                                        <td>
+                                                                            <div class="d-flex justify-content-center align-items-center flex-nowrap gap-1">
+                                                                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="changeQuantity(this, -1, ${sp.price})">−</button>
+                                                                                <input 
+                                                                                    type="number" 
+                                                                                    class="form-control form-control-sm text-center quantity-input" 
+                                                                                    name="quantity_${sp.size}" 
+                                                                                    min="0" 
+                                                                                    value="0" 
+                                                                                    style="width: 60px;" 
+                                                                                    onchange="updateSizeTotal(this, ${sp.price})">
+                                                                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="changeQuantity(this, 1, ${sp.price})">+</button>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="sizeTotal" data-price="${sp.price}">₹0</td>
+                                                                        <input type="hidden" name="size_${sp.size}" value="${sp.size}">
+                                                                        <input type="hidden" name="price_${sp.size}" value="${sp.price}">
+                                                                    </tr>
+                                                                `).join('')}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
                                             <div class="d-flex justify-content-end mt-2">
                                                 <strong>Subtotal: </strong>
                                                 <span id="subtotal" class="ms-2">₹0</span>
                                             </div>
-                                        </div>
-                                        
-                                        <!-- Customization Toggle -->
-                                        
-                                        <!-- Customization Options -->
-                                        <div id="customizationSection" class="customization-section border rounded p-3 mb-4">
-                                            <h5 class="mb-3">Customization Options</h5>
-                                            
-                                            <div class="mb-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="customizationType" id="dtfOption" value="DTF" onchange="updateCustomization()">
-                                                    <label class="form-check-label fw-bold" for="dtfOption">
-                                                        DTF Printing (+₹75 per item)
-                                                    </label>
-                                                </div>
-                                                <div id="dtfDesigns" class="mt-2 ms-4 d-none">
-                                                    <h6 class="mb-2">Select DTF Design</h6>
-                                                    <div class="row">
-                                                        ${[1,2,3,4,5,6,7,8,9,10].map(i => `
-                                                            <div class="col-4 col-sm-3 mb-3">
-                                                                <div class="design-option rounded border p-1" onclick="selectDesign(this, 'dtf_${i}.jpeg')">
-                                                                    <input type="radio" name="selectedDesign" value="dtf_${i}.jpeg" style="display: none;">
-                                                                    <img src="/customize/dtf_${i}.jpeg" class="img-fluid rounded">
-                                                                    <div class="zoom-icon" onclick="previewImage('/customize/dtf_${i}.jpeg', event)">
-                                                                        <i class="fas fa-search-plus"></i>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        `).join('')}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="customizationType" id="stoneOption" value="STONE_WORK" onchange="updateCustomization()">
-                                                    <label class="form-check-label fw-bold" for="stoneOption">
-                                                        Stone Work (+₹200 per item)
-                                                    </label>
-                                                </div>
-                                                <div id="stoneDesigns" class="mt-2 ms-4 d-none">
-                                                    <h6 class="mb-2">Select Stone Design</h6>
-                                                    <div class="row">
-                                                        ${[1,2,3,4,5,6,7,8,9,10].map(i => `
-                                                            <div class="col-4 col-sm-3 mb-3">
-                                                                <div class="design-option rounded border p-1" onclick="selectDesign(this, 'stone_${i}.jpeg')">
-                                                                    <input type="radio" name="selectedDesign" value="stone_${i}.jpeg" style="display: none;">
-                                                                    <img src="/customize/stone_${i}.jpeg" class="img-fluid rounded">
-                                                                    <div class="zoom-icon" onclick="previewImage('/customize/stone_${i}.jpeg', event)">
-                                                                        <i class="fas fa-search-plus"></i>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        `).join('')}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="customizationType" id="embroideryOption" value="EMBROIDERY" onchange="updateCustomization()">
-                                                    <label class="form-check-label fw-bold" for="embroideryOption">
-                                                        Embroidery (+₹300 per item)
-                                                    </label>
-                                                </div>
-                                                <div id="embroideryDesigns" class="mt-2 ms-4 d-none">
-                                                    <h6 class="mb-2">Select Embroidery Design</h6>
-                                                    <div class="row">
-                                                        ${[1,2,3,4,5,6,7,8,9,10].map(i => `
-                                                            <div class="col-4 col-sm-3 mb-3">
-                                                                <div class="design-option rounded border p-1" onclick="selectDesign(this, 'embroidery_${i}.jpeg')">
-                                                                    <input type="radio" name="selectedDesign" value="embroidery_${i}.jpeg" style="display: none;">
-                                                                    <img src="/customize/embroidery_${i}.jpeg" class="img-fluid rounded">
-                                                                    <div class="zoom-icon" onclick="previewImage('/customize/embroidery_${i}.jpeg', event)">
-                                                                        <i class="fas fa-search-plus"></i>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        `).join('')}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <div>
-    <div class="form-check">
-        <input class="form-check-input" type="radio" name="customizationType" id="customOption" value="CUSTOM" onchange="updateCustomization()">
-        <label class="form-check-label fw-bold" for="customOption">
-            Custom Design (+₹150 per item)
-        </label>
-        
-    </div>
-    <div id="customDesign" class="mt-2 ms-4 d-none">
-        <h6 class="mb-2">Upload Your Design</h6>
-        <div class="mb-3">
-            <input type="file" class="form-control" id="customImageUpload" accept="image/*">
-        </div>
-        <div id="customImageContainer" class="mb-3 d-none">
-            <div class="custom-img-container">
-                <img id="customImagePreview" src="#" class="img-fluid rounded border" style="max-height: 200px;">
-                <span class="custom-img-close" onclick="removeCustomImage()">&times;</span>
-                <div class="zoom-icon" onclick="previewImage('#customImagePreview', event)">
-                    <i class="fas fa-search-plus"></i>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Color Selection Section -->
-        <div class="mb-3">
-            <h6 class="mb-2">Select Color</h6>
-            <div class="color-options d-flex flex-wrap gap-2">
-                <div class="color-option" style="background-color: #FF0000;" title="Red" onclick="addColorToTextarea('Red')"></div>
-                <div class="color-option" style="background-color: #00FF00;" title="Green" onclick="addColorToTextarea('Green')"></div>
-                <div class="color-option" style="background-color: #0000FF;" title="Blue" onclick="addColorToTextarea('Blue')"></div>
-                <div class="color-option" style="background-color: #FFFF00;" title="Yellow" onclick="addColorToTextarea('Yellow')"></div>
-                <div class="color-option" style="background-color: #FF00FF;" title="Magenta" onclick="addColorToTextarea('Magenta')"></div>
-                <div class="color-option" style="background-color: #00FFFF;" title="Cyan" onclick="addColorToTextarea('Cyan')"></div>
-                <div class="color-option" style="background-color: #FFA500;" title="Orange" onclick="addColorToTextarea('Orange')"></div>
-                <div class="color-option" style="background-color: #800080;" title="Purple" onclick="addColorToTextarea('Purple')"></div>
-                <div class="color-option" style="background-color: #A52A2A;" title="Brown" onclick="addColorToTextarea('Brown')"></div>
-                <div class="color-option" style="background-color: #000000;" title="Black" onclick="addColorToTextarea('Black')"></div>
-                <div class="color-option" style="background-color: #FFFFFF; border: 1px solid #ddd;" title="White" onclick="addColorToTextarea('White')"></div>
-                <div class="color-option" style="background-color: #808080;" title="Gray" onclick="addColorToTextarea('Gray')"></div>
-                <div class="color-option" style="background-color: #FFC0CB;" title="Pink" onclick="addColorToTextarea('Pink')"></div>
-                <div class="color-option" style="background-color: #008000;" title="Dark Green" onclick="addColorToTextarea('Dark Green')"></div>
-                <div class="color-option" style="background-color: #000080;" title="Navy Blue" onclick="addColorToTextarea('Navy Blue')"></div>
-                <div class="color-option" style="background-color: #FF6347;" title="Tomato" onclick="addColorToTextarea('Tomato')"></div>
-                <div class="color-option" style="background-color: #40E0D0;" title="Turquoise" onclick="addColorToTextarea('Turquoise')"></div>
-                <div class="color-option" style="background-color: #EE82EE;" title="Violet" onclick="addColorToTextarea('Violet')"></div>
-                <div class="color-option" style="background-color: #D2B48C;" title="Tan" onclick="addColorToTextarea('Tan')"></div>
-                <div class="color-option" style="background-color: #4B0082;" title="Indigo" onclick="addColorToTextarea('Indigo')"></div>
-            </div>
-        </div>
-        
-        <textarea class="form-control" name="customDescription" placeholder="Customization instructions " rows="3"></textarea>
-    </div>
-</div>
-
-<style>
-    .color-option {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        cursor: pointer;
-        transition: transform 0.2s;
-        border: 1px solid #ddd;
-    }
-    
-    .color-option:hover {
-        transform: scale(1.1);
-        box-shadow: 0 0 5px rgba(0,0,0,0.3);
-    }
-</style>
-
-<script>
-    function addColorToTextarea(colorName) {
-        const textarea = document.querySelector('textarea[name="customDescription"]');
-        const currentText = textarea.value;
-        
-        // Add the color name to the textarea
-        if (currentText) {
-            textarea.value = currentText + ', ' + colorName;
-        } else {
-            textarea.value = 'Color: ' + colorName;
-        }
-        
-        // Focus on the textarea
-        textarea.focus();
-    }
-    
-    // Your existing functions
-    function updateCustomization() {
-        // Your existing implementation
-    }
-    
-    function removeCustomImage() {
-        // Your existing implementation
-    }
-    
-    function previewImage(selector, event) {
-        // Your existing implementation
-    }
-</script>
-
                                         </div>
                                         
                                         <!-- Order Summary -->
@@ -2058,14 +1860,10 @@ app.get('/product/:id', async (req, res) => {
                                                     <span>Product Subtotal:</span>
                                                     <span id="productSubtotal">₹0</span>
                                                 </div>
-                                                <div class="d-flex justify-content-between mb-2">
-                                                    <span>Customization:</span>
-                                                    <span id="customizationPrice">₹0</span>
-                                                </div>
                                                 <hr>
                                                 <div class="d-flex justify-content-between fw-bold">
                                                     <span>Total:</span>
-                                                    <p>Delivery Charge:100</p>
+                                                    <p>Delivery Charge: ₹100</p>
                                                     <span id="totalPrice">₹0</span>
                                                 </div>
                                             </div>
@@ -2078,15 +1876,6 @@ app.get('/product/:id', async (req, res) => {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Image Preview Modal -->
-                <div id="imagePreviewModal" class="image-preview-modal">
-                    <div class="image-preview-content" id="imagePreviewContent">
-                        <span class="image-preview-close" onclick="closeImagePreview()">&times;</span>
-                        <img id="imagePreviewImg" class="image-preview-img" src="">
-                        <div class="resize-handle" id="resizeHandle"></div>
                     </div>
                 </div>
 
@@ -2125,9 +1914,6 @@ app.get('/product/:id', async (req, res) => {
                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
                 <script>
                     let selectedSizes = {};
-                    let customImageBase64 = '';
-                    let isResizing = false;
-                    let startX, startY, startWidth, startHeight;
                     
                     function changeMainImage(src) {
                         document.getElementById('mainProductImage').src = src;
@@ -2135,13 +1921,9 @@ app.get('/product/:id', async (req, res) => {
                         event.currentTarget.classList.add('active');
                     }
                     
-                    function updateQuantity(inputName, change, price) {
-                        const input = document.querySelector('input[name="username"]');
-
-                        let newValue = parseInt(input.value) + change;
-                        if (newValue < 0) newValue = 0;
-                        input.value = newValue;
-                        updateSizeTotal(input, price);
+                    function toggleDropdown(dropdownId) {
+                        const dropdown = document.getElementById(dropdownId);
+                        dropdown.classList.toggle('active');
                     }
                     
                     function validateForm() {
@@ -2173,6 +1955,15 @@ app.get('/product/:id', async (req, res) => {
                         updateSubtotal();
                     }
                     
+                    function changeQuantity(button, delta, price) {
+                        var input = button.parentElement.querySelector('.quantity-input');
+                        var current = parseInt(input.value) || 0;
+                        current += delta;
+                        if (current < 0) current = 0;
+                        input.value = current;
+                        updateSizeTotal(input, price);
+                    }
+                    
                     function updateSubtotal() {
                         let subtotal = 0;
                         for (const size in selectedSizes) {
@@ -2183,189 +1974,12 @@ app.get('/product/:id', async (req, res) => {
                         updateTotal();
                     }
                     
-                    function toggleCustomization() {
-                        const customizeCheckbox = document.getElementById('customizeCheckbox');
-                        const customizationSection = document.getElementById('customizationSection');
-                        
-                        if (customizeCheckbox.checked) {
-                            customizationSection.style.display = 'block';
-                            customizationSection.classList.remove('d-none');
-                        } else {
-                            customizationSection.style.display = 'none';
-                            customizationSection.classList.add('d-none');
-                            // Reset customization
-                            document.querySelectorAll('input[name="customizationType"]').forEach(el => el.checked = false);
-                            document.querySelectorAll('input[name="selectedDesign"]').forEach(el => el.checked = false);
-                            document.querySelectorAll('.design-option').forEach(el => el.classList.remove('selected'));
-                            document.getElementById('customImageUpload').value = '';
-                            document.getElementById('customImageContainer').classList.add('d-none');
-                            document.querySelector('textarea[name="customDescription"]').value = '';
-                            updateCustomization();
-                        }
-                    }
-                    
-                    function selectDesign(element, value) {
-                        document.querySelectorAll('.design-option').forEach(el => el.classList.remove('selected'));
-                        element.classList.add('selected');
-                        const radio = element.querySelector('input[type="radio"]');
-                        radio.checked = true;
-                        updateCustomization();
-                    }
-                    
-                    function updateCustomization() {
-                        const customizationType = document.querySelector('input[name="customizationType"]:checked');
-                        
-                        // Show/hide design sections
-                        document.getElementById('dtfDesigns').classList.add('d-none');
-                        document.getElementById('stoneDesigns').classList.add('d-none');
-                        document.getElementById('embroideryDesigns').classList.add('d-none');
-                        document.getElementById('customDesign').classList.add('d-none');
-                        
-                        let additionalCost = 0;
-                        
-                        if (customizationType) {
-                            switch(customizationType.value) {
-                                case 'DTF':
-                                    additionalCost = 75;
-                                    document.getElementById('dtfDesigns').classList.remove('d-none');
-                                    break;
-                                case 'STONE_WORK':
-                                    additionalCost = 200;
-                                    document.getElementById('stoneDesigns').classList.remove('d-none');
-                                    break;
-                                case 'EMBROIDERY':
-                                    additionalCost = 300;
-                                    document.getElementById('embroideryDesigns').classList.remove('d-none');
-                                    break;
-                                case 'CUSTOM':
-                                    additionalCost = 150;
-                                    document.getElementById('customDesign').classList.remove('d-none');
-                                    break;
-                            }
-                        }
-                        
-                        // Calculate total customization cost (applied to each item)
-                        let totalCustomizationCost = 0;
-                        for (const size in selectedSizes) {
-                            totalCustomizationCost += additionalCost * selectedSizes[size].quantity;
-                        }
-                        
-                        document.getElementById('customizationPrice').textContent = '₹' + totalCustomizationCost;
-                        updateTotal();
-                    }
-                    
                     function updateTotal() {
                         const subtotal = parseFloat(document.getElementById('subtotal').textContent.replace('₹', '')) || 0;
-                        const customizationPrice = parseFloat(document.getElementById('customizationPrice').textContent.replace('₹', '')) || 0;
-                        const total = subtotal + customizationPrice;
+                        const total = subtotal + 100; // Adding delivery charge
                         
                         document.getElementById('totalPrice').textContent = '₹' + total;
                     }
-                    
-                    // Handle custom image upload
-                    document.getElementById('customImageUpload').addEventListener('change', function(e) {
-                        const file = e.target.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = function(e) {
-                                customImageBase64 = e.target.result;
-                                const preview = document.getElementById('customImagePreview');
-                                preview.src = customImageBase64;
-                                document.getElementById('customImageContainer').classList.remove('d-none');
-                            };
-                            reader.readAsDataURL(file);
-                        }
-                    });
-                    
-                    function removeCustomImage() {
-                        customImageBase64 = '';
-                        document.getElementById('customImageUpload').value = '';
-                        document.getElementById('customImageContainer').classList.add('d-none');
-                    }
-                    
-                    // Image preview functionality
-                    function previewImage(src, event) {
-                        event.stopPropagation();
-                        const modal = document.getElementById('imagePreviewModal');
-                        const img = document.getElementById('imagePreviewImg');
-                        
-                        if (src.startsWith('#')) {
-                            // It's an element ID
-                            const element = document.querySelector(src);
-                            if (element && element.src) {
-                                img.src = element.src;
-                            }
-                        } else {
-                            // It's a direct URL
-                            img.src = src;
-                        }
-                        
-                        modal.style.display = 'flex';
-                        document.body.style.overflow = 'hidden';
-                    }
-                    
-                    function closeImagePreview() {
-                        document.getElementById('imagePreviewModal').style.display = 'none';
-                        document.body.style.overflow = 'auto';
-                    }
-                    
-                    // Resize functionality for the preview modal
-                    document.getElementById('resizeHandle').addEventListener('mousedown', function(e) {
-                        e.preventDefault();
-                        isResizing = true;
-                        const content = document.getElementById('imagePreviewContent');
-                        startX = e.clientX;
-                        startY = e.clientY;
-                        startWidth = parseInt(document.defaultView.getComputedStyle(content).width, 10);
-                        startHeight = parseInt(document.defaultView.getComputedStyle(content).height, 10);
-                        
-                        document.documentElement.addEventListener('mousemove', handleResize);
-                        document.documentElement.addEventListener('mouseup', stopResize);
-                    });
-                    
-                    function handleResize(e) {
-                        if (isResizing) {
-                            const content = document.getElementById('imagePreviewContent');
-                            const newWidth = startWidth + e.clientX - startX;
-                            const newHeight = startHeight + e.clientY - startY;
-                            
-                            // Set minimum dimensions
-                            const minWidth = 200;
-                            const minHeight = 200;
-                            
-                            if (newWidth > minWidth) {
-                                content.style.width = newWidth + 'px';
-                            }
-                            
-                            if (newHeight > minHeight) {
-                                content.style.height = newHeight + 'px';
-                            }
-                        }
-                    }
-                    
-                    function stopResize() {
-                        isResizing = false;
-                        document.documentElement.removeEventListener('mousemove', handleResize);
-                        document.documentElement.removeEventListener('mouseup', stopResize);
-                    }
-                    
-                    // Close modal when clicking outside the content
-                    document.getElementById('imagePreviewModal').addEventListener('click', function(e) {
-                        if (e.target === this) {
-                            closeImagePreview();
-                        }
-                    });
-                    
-                    // Update form submission to include custom image
-                    document.getElementById('buyForm').addEventListener('submit', function(e) {
-                        if (customImageBase64) {
-                            const input = document.createElement('input');
-                            input.type = 'hidden';
-                            input.name = 'customImage';
-                            input.value = customImageBase64;
-                            this.appendChild(input);
-                        }
-                    });
                 </script>
             </body>
             </html>
