@@ -464,7 +464,7 @@ app.get('/', (req, res) => {
             <header>
                 <div class="header-container">
                     <div class="brand-nav">
-                        <h1>FESTIVE SPIDER</h1>
+                        <h1>FESTIVES SPIDER</h1>
                     </div>
                     
                     <button class="mobile-menu-btn" aria-label="Menu">
