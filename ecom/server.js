@@ -2930,15 +2930,141 @@ app.post('/checkout', async (req, res) => {
                                 <input type="text" name="state" required>
                             </div>
                             
-                            <h3>Payment Information</h3>
-                            <div class="qr-container">
-                                <p>Please make payment via QR code and enter UTR number below</p>
-                                <img src="/qr.jpeg" alt="QR Code">
-                                <div class="form-group">
-                                    <label>UTR Number (12 digits):</label>
-                                    <input type="text" name="utrNumber" pattern="[0-9]{12}" title="12 digit UTR number" required>
-                                </div>
-                            </div>
+         <h3>Payment Information</h3>
+<div>
+    <p>Please make payment via QR code and enter UTR number below</p>
+    <img id="qrCode" src="" alt="QR Code">
+
+    <div>
+        <label>UTR Number (12 digits):</label>
+        <input type="text" name="utrNumber" pattern="[0-9]{12}" title="12 digit UTR number" required>
+    </div>
+</div>
+
+<div>
+    <p>Or Pay Using:</p>
+    <button onclick="pay('gpay')">Google Pay</button>
+    <button onclick="pay('phonepe')">PhonePe</button>
+    <button onclick="pay('paytm')">Paytm</button>
+    <button onclick="pay('bhim')">BHIM</button>
+    <button onclick="pay('amazon')">Amazon Pay</button>
+    <button onclick="pay('mobikwik')">Mobikwik</button>
+    <button onclick="pay('freecharge')">Freecharge</button>
+    <button onclick="pay('airtel')">Airtel Payments Bank</button>
+    <button onclick="pay('fampay')">FamPay</button>
+</div>
+
+<script>
+    const upiId = "7358862602@ybl";
+    const name = "Mr. Sailakannan";
+    const baseTotal = 500;
+    const finalAmount = baseTotal + 100;
+
+    const upiUrl = "upi://pay?pa=" + upiId +
+                   "&pn=" + encodeURIComponent(name) +
+                   "&am=" + finalAmount +
+                   "&cu=INR";
+
+    const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?data=" + encodeURIComponent(upiUrl) + "&size=200x200";
+    document.getElementById("qrCode").src = qrUrl;
+
+    function pay(app) {
+        const baseIntent = "intent://pay?pa=" + upiId +
+                           "&pn=" + encodeURIComponent(name) +
+                           "&am=" + finalAmount +
+                           "&cu=INR#Intent;scheme=upi;package=";
+
+        let intentUrl = "";
+
+        switch (app) {
+            case "gpay":
+                intentUrl = baseIntent + "com.google.android.apps.nbu.paisa.user;end";
+                break;
+            case "phonepe":
+                intentUrl = baseIntent + "com.phonepe.app;end";
+                break;
+            case "paytm":
+                intentUrl = baseIntent + "net.one97.paytm;end";
+                break;
+            case "bhim":
+                intentUrl = baseIntent + "in.org.npci.upiapp;end";
+                break;
+            case "amazon":
+                intentUrl = baseIntent + "in.amazon.mShop.android.shopping;end";
+                break;
+            case "mobikwik":
+                intentUrl = baseIntent + "com.mobikwik_new;end";
+                break;
+            case "freecharge":
+                intentUrl = baseIntent + "com.freecharge.android;end";
+                break;
+            case "airtel":
+                intentUrl = baseIntent + "com.myairtelapp;end";
+                break;
+            case "fampay":
+                intentUrl = baseIntent + "com.fampay.in;end";
+                break;
+            default:
+                alert("Unsupported app");
+                return;
+        }
+
+        // ✅ Redirect directly to the UPI app
+        window.location.href = intentUrl;
+    }
+</script>
+
+
+  <script>
+  const upiId = "7358862602@ybl";
+  const name = "Mr. Sailakannan";
+  const total = ${total + 100}; // Replace with your dynamic total if needed
+  const finalAmount = total;
+
+  var upiUrl = "upi://pay?pa=" + upiId + "&pn=" + encodeURIComponent(name) + "&am=" + finalAmount + "&cu=INR";
+  var qrUrl = "https://api.qrserver.com/v1/create-qr-code/?data=" + encodeURIComponent(upiUrl) + "&size=200x200";
+
+  document.getElementById("qrCode").src = qrUrl;
+
+  function pay(app) {
+    var intentUrl = "";
+
+    var baseIntent = "intent://pay?pa=" + upiId + "&pn=" + encodeURIComponent(name) + "&am=" + finalAmount + "&cu=INR#Intent;scheme=upi;package=";
+
+    switch (app) {
+      case 'gpay':
+        intentUrl = baseIntent + "com.google.android.apps.nbu.paisa.user;end";
+        break;
+      case 'phonepe':
+        intentUrl = baseIntent + "com.phonepe.app;end";
+        break;
+      case 'paytm':
+        intentUrl = baseIntent + "net.one97.paytm;end";
+        break;
+      case 'bhim':
+        intentUrl = baseIntent + "in.org.npci.upiapp;end";
+        break;
+      case 'amazon':
+        intentUrl = baseIntent + "in.amazon.mShop.android.shopping;end";
+        break;
+      case 'mobikwik':
+        intentUrl = baseIntent + "com.mobikwik_new;end";
+        break;
+      case 'freecharge':
+        intentUrl = baseIntent + "com.freecharge.android;end";
+        break;
+      case 'airtel':
+        intentUrl = baseIntent + "com.myairtelapp;end";
+        break;
+      case 'fampay':
+        intentUrl = baseIntent + "com.fampay.in;end";
+        break;
+    }
+
+    window.location.href = intentUrl;
+  }
+</script>
+
                             
                             <button type="submit" class="submit-btn">Complete Order</button>
                         </form>
