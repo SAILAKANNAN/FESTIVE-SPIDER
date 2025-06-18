@@ -93,570 +93,871 @@ app.get('/', (req, res) => {
         return res.redirect('/admin');
     }
     res.send(`
-        <html>
-        <head>
-            <title>MyShop - Modern e-Commerce</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-            <style>
-                :root {
-                    --primary: #4361ee;
-                    --secondary: #3f37c9;
-                    --accent: #4895ef;
-                    --dark: #1b263b;
-                    --light: #f8f9fa;
-                    --success: #4cc9f0;
-                    --danger: #f72585;
-                    --warning: #f8961e;
-                    --gray: #adb5bd;
-                }
-                
-                * {
-                    box-sizing: border-box;
-                    margin: 0;
-                    padding: 0;
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                }
-                
-                body {
-                    display: flex;
-                    flex-direction: column;
-                    min-height: 100vh;
-                    background-color: #f5f7fa;
-                    color: var(--dark);
-                    line-height: 1.6;
-                }
-                
-                /* Header Styles */
-                header {
-                    background: linear-gradient(135deg, var(--primary), var(--secondary));
-                    color: white;
-                    padding: 1rem;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                    position: relative;
-                    z-index: 100;
-                }
-                
-                .header-container {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    flex-wrap: wrap;
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    gap: 1rem;
-                }
-                
-                .brand-nav {
-                    display: flex;
-                    align-items: center;
-                    gap: 1rem;
-                }
-                
-                h1 {
-                    font-size: 1.8rem;
-                    font-weight: 700;
-                    color: white;
-                }
-                
-                /* Desktop Navigation */
-                .desktop-nav {
-                    display: flex;
-                    align-items: center;
-                    gap: 1.5rem;
-                }
-                
-                .nav-links {
-                    display: flex;
-                    gap: 1.5rem;
-                }
-                
-                .nav-links a {
-                    color: white;
-                    text-decoration: none;
-                    font-weight: 500;
-                    position: relative;
-                    padding: 0.5rem 0;
-                }
-                
-                .nav-links a::after {
-                    content: '';
-                    position: absolute;
-                    width: 0;
-                    height: 2px;
-                    bottom: 0;
-                    left: 0;
-                    background-color: white;
-                    transition: width 0.3s ease;
-                }
-                
-                .nav-links a:hover::after {
-                    width: 100%;
-                }
-                
-                .login-link {
-                    margin-left: 1rem;
-                }
-                
-                .login-link a {
-                    color: white;
-                    text-decoration: none;
-                    font-weight: 500;
-                    padding: 0.5rem 1rem;
-                    border-radius: 4px;
-                    background-color: rgba(255,255,255,0.2);
-                    transition: background-color 0.3s ease;
-                }
-                
-                .login-link a:hover {
-                    background-color: rgba(255,255,255,0.3);
-                }
-                
-                /* Search Bar */
-                .search-bar {
-                    display: flex;
-                    width: 100%;
-                    margin-top: 1rem;
-                    order: 3;
-                }
-                
-                .search-bar form {
-                    display: flex;
-                    width: 100%;
-                    max-width: 600px;
-                    margin: 0 auto;
-                    border-radius: 50px;
-                    overflow: hidden;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                }
-                
-                .search-bar input {
-                    flex-grow: 1;
-                    padding: 0.8rem 1.5rem;
-                    border: none;
-                    font-size: 1rem;
-                }
-                
-                .search-bar input:focus {
-                    outline: none;
-                }
-                
-                .search-bar button {
-                    padding: 0 1.5rem;
-                    background-color: var(--accent);
-                    color: white;
-                    border: none;
-                    cursor: pointer;
-                }
-                
-                /* Mobile Menu Button - Fixed in top right */
-                .mobile-menu-btn {
-                    display: none;
-                    background: none;
-                    border: none;
-                    color: white;
-                    font-size: 1.5rem;
-                    cursor: pointer;
-                    padding: 0.5rem;
-                    margin-left: auto;
-                    z-index: 101;
-                }
-                
-                /* Mobile Menu - Dropdown */
-                .mobile-menu {
-                    display: none;
-                    position: absolute;
-                    top: 100%;
-                    right: 1rem;
-                    background-color: var(--secondary);
-                    border-radius: 8px;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-                    z-index: 100;
-                    min-width: 200px;
-                    transform: translateY(-20px);
-                    opacity: 0;
-                    transition: all 0.3s ease;
-                    overflow: hidden;
-                }
-                
-                .mobile-menu.active {
-                    transform: translateY(0);
-                    opacity: 1;
-                }
-                
-                .mobile-menu .nav-links {
-                    flex-direction: column;
-                    gap: 0;
-                }
-                
-                .mobile-menu .nav-links a {
-                    padding: 0.8rem 1rem;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    transition: background-color 0.3s ease;
-                }
-                
-                .mobile-menu .nav-links a:hover {
-                    background-color: rgba(255,255,255,0.1);
-                }
-                
-                .mobile-menu .login-link {
-                    margin: 0;
-                    border-top: 1px solid rgba(255,255,255,0.1);
-                }
-                
-                .mobile-menu .login-link a {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    border-radius: 0;
-                    background: none;
-                    padding: 0.8rem 1rem;
-                }
-                
-                .mobile-menu .login-link a:hover {
-                    background-color: rgba(255,255,255,0.1);
-                }
-                
-                /* Product Grid */
-                main {
-                    flex: 1;
-                    padding: 2rem;
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    width: 100%;
-                }
-                
-                #products-container {
-                    display: grid;
-                    grid-template-columns: repeat(4, 1fr);
-                    gap: 1.5rem;
-                }
-                
-                .product-card {
-                    background: white;
-                    border-radius: 12px;
-                    overflow: hidden;
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-                    transition: all 0.3s ease;
-                    cursor: pointer;
-                }
-                
-                .product-card:hover {
-                    transform: translateY(-5px);
-                    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-                }
-                
-                .product-image {
-                    width: 100%;
-                    height: 180px;
-                    object-fit: cover;
-                }
-                
-                .product-info {
-                    padding: 1rem;
-                }
-                
-                .product-title {
-                    font-size: 1rem;
-                    font-weight: 600;
-                    margin-bottom: 0.5rem;
-                    color: var(--dark);
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                }
-                
-                .price-info {
-                    display: flex;
-                    align-items: center;
-                    flex-wrap: wrap;
-                    gap: 0.5rem;
-                }
-                
-                .current-price {
-                    font-weight: 700;
-                    color: var(--primary);
-                    font-size: 1.1rem;
-                }
-                
-                .original-price {
-                    text-decoration: line-through;
-                    color: var(--gray);
-                    font-size: 0.9rem;
-                }
-                
-                .discount-badge {
-                    background-color: var(--danger);
-                    color: white;
-                    padding: 0.2rem 0.5rem;
-                    border-radius: 4px;
-                    font-size: 0.8rem;
-                    font-weight: 600;
-                }
-                
-                /* Footer */
-                footer {
-                    background: var(--dark);
-                    color: white;
-                    text-align: center;
-                    padding: 2rem 1rem;
-                    margin-top: auto;
-                }
-                
-                .copyright {
-                    font-size: 0.9rem;
-                    opacity: 0.8;
-                }
-                
-                /* Responsive Adjustments */
-                @media (max-width: 1024px) {
-                    #products-container {
-                        grid-template-columns: repeat(3, 1fr);
-                    }
-                }
-                
-                @media (max-width: 768px) {
-                    .mobile-menu-btn {
-                        display: block;
-                    }
-                    
-                    .desktop-nav {
-                        display: none;
-                    }
-                    
-                    .mobile-menu {
-                        display: block;
-                    }
-                    
-                    #products-container {
-                        grid-template-columns: repeat(2, 1fr);
-                        gap: 1rem;
-                    }
-                    
-                    main {
-                        padding: 1rem;
-                    }
-                    
-                    .product-image {
-                        height: 150px;
-                    }
-                }
-                
-                @media (max-width: 480px) {
-                    h1 {
-                        font-size: 1.5rem;
-                    }
-                    
-                    .product-image {
-                        height: 120px;
-                    }
-                    
-                    .mobile-menu {
-                        right: 0.5rem;
-                    }
-                }
-            </style>
-        </head>
-        <body>
-            <header>
-                <div class="header-container">
-                    <div class="brand-nav">
-                        <h1>FESTIVES SPIDER</h1>
-                    </div>
-                    
-                    <button class="mobile-menu-btn" aria-label="Menu">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    
-                    <div class="desktop-nav">
-                        <div class="nav-links">
-                            <a href="/about">About Us</a>
-                            <a href="/contact">Contact</a>
-                        </div>
-                        <div class="login-link">
-                            <a href="/login">Login</a>
-                        </div>
-                    </div>
-                    
-                   
-                    
-                    <!-- Mobile Menu Dropdown -->
-                    <div class="mobile-menu">
-                        <div class="nav-links">
-                            <a href="/about"><i class="fas fa-info-circle"></i> About Us</a>
-                            <a href="/contact"><i class="fas fa-envelope"></i> Contact</a>
-                        </div>
-                        <div class="login-link">
-                            <a href="/login"><i class="fas fa-user"></i> Login</a>
-                        </div>
-                    </div>
-                </div>
-            </header>
-            <!DOCTYPE html>
-<html lang="en">
+       <!DOCTYPE html>
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Animated Shop Card</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyShop - Modern E-Commerce</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      :root {
+    --primary: #121212;
+    --secondary: #1a1a1a;
+    --accent: #FFD700;
+    --gold-light: #FFECB3;
+    --gold-dark: #C9A227;
+    --dark: #0a0a0a;
+    --light: #f8f8f8;
+    --success: #28a745;
+    --danger: #dc3545;
+    --warning: #ffc107;
+    --gray: #6c757d;
+    --text-on-gold: #2a2a2a;
+}
 
-  <!-- Bootstrap 5 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Open+Sans&display=swap" rel="stylesheet">
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Playfair Display', 'Times New Roman', serif;
+}
 
-  <style>
-    body {
-      background-color: #f2f2f2;
-      font-family: 'Open Sans', sans-serif;
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--primary);
+    color: var(--light);
+    line-height: 1.6;
+}
+
+/* Luxury Gold Animations */
+@keyframes goldPulse {
+    0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+    100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+}
+
+@keyframes goldShine {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+@keyframes fadeInLuxury {
+    from { 
+        opacity: 0;
+        transform: translateY(20px);
     }
-
-    .animated-card {
-      background: linear-gradient(135deg, #6a11cb, #2575fc);
-      background-size: 200% 200%;
-      animation: gradientMove 6s ease infinite;
-      border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-      color: white;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    to { 
+        opacity: 1;
+        transform: translateY(0);
     }
+}
 
-    .animated-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+@keyframes floatGold {
+    0% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+    100% { transform: translateY(0) rotate(0deg); }
+}
+
+/* Header Styles */
+header {
+    background: var(--dark);
+    color: var(--light);
+    padding: 0.8rem 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+    animation: fadeInLuxury 0.8s ease-out;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.brand-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(to right, var(--accent), var(--gold-light));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+    letter-spacing: 1px;
+    transition: all 0.5s ease;
+    font-family: 'Playfair Display', serif;
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--accent), transparent);
+    transform: scaleX(0);
+    transition: transform 0.5s ease;
+}
+
+h1:hover {
+    transform: scale(1.02);
+    text-shadow: 0 4px 12px rgba(255, 215, 0, 0.5);
+}
+
+h1:hover::after {
+    transform: scaleX(1);
+}
+
+/* Navigation */
+.desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    color: var(--light);
+    text-decoration: none;
+    font-weight: 500;
+    position: relative;
+    padding: 0.5rem 0;
+    transition: all 0.4s ease;
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(to right, var(--accent), var(--gold-light));
+    transition: width 0.4s ease, opacity 0.4s ease;
+    opacity: 0;
+}
+
+.nav-links a:hover {
+    color: var(--accent);
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+    opacity: 1;
+}
+
+.login-link {
+    margin-left: 1rem;
+}
+
+.login-link a {
+    color: var(--text-on-gold);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.6rem 1.5rem;
+    border-radius: 30px;
+    background: linear-gradient(to right, var(--accent), var(--gold-light));
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+    font-family: 'Montserrat', sans-serif;
+    border: none;
+}
+
+.login-link a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: 0.5s;
+}
+
+.login-link a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+.login-link a:hover::before {
+    left: 100%;
+}
+
+/* Mobile Menu */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--light);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.3rem;
+    margin-left: 0.5rem;
+    z-index: 101;
+    transition: all 0.4s ease;
+    flex-shrink: 0;
+}
+
+.mobile-menu-btn:hover {
+    color: var(--accent);
+    transform: rotate(90deg);
+}
+
+.mobile-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 1rem;
+    background-color: var(--dark);
+    border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    z-index: 100;
+    min-width: 220px;
+    transform: translateY(-20px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+    border: 1px solid rgba(255, 215, 0, 0.1);
+}
+
+.mobile-menu.active {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.mobile-menu .nav-links {
+    flex-direction: column;
+    gap: 0;
+}
+
+.mobile-menu .nav-links a {
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.mobile-menu .nav-links a:hover {
+    background-color: rgba(255,215,0,0.05);
+    padding-left: 1.8rem;
+    color: var(--accent);
+}
+
+.mobile-menu .login-link {
+    margin: 0;
+}
+
+.mobile-menu .login-link a {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    border-radius: 0;
+    background: none;
+    padding: 1rem 1.5rem;
+    color: var(--light);
+    box-shadow: none;
+    justify-content: center;
+    background-color: rgba(255,215,0,0.1);
+}
+
+.mobile-menu .login-link a:hover {
+    background-color: rgba(255,215,0,0.2);
+    color: var(--accent);
+}
+
+/* Luxury Banner */
+.luxury-banner {
+    background: var(--dark);
+    border-radius: 0;
+    padding: 2.5rem 1.5rem;
+    margin: 0 auto;
+    max-width: 100%;
+    border: none;
+    box-shadow: none;
+    position: relative;
+    overflow: hidden;
+    animation: fadeInLuxury 0.8s ease-out 0.2s both;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+}
+
+.luxury-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
+    animation: goldShine 8s linear infinite;
+    pointer-events: none;
+}
+
+.shop-title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(to right, var(--accent), var(--gold-light));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 2px 10px rgba(255, 215, 0, 0.2);
+    position: relative;
+    display: inline-block;
+    animation: fadeInLuxury 0.8s ease-out 0.3s both;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.shop-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--accent), transparent);
+}
+
+.shop-description {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.8);
+    max-width: 800px;
+    margin: 0 auto;
+    animation: fadeInLuxury 0.8s ease-out 0.4s both;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Luxury Product Grid */
+main {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    animation: fadeInLuxury 0.8s ease-out;
+}
+
+#products-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    animation: fadeInLuxury 0.8s ease-out 0.2s both;
+}
+
+.product-card {
+    background: linear-gradient(145deg, var(--secondary), var(--primary));
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    cursor: pointer;
+    border: 1px solid rgba(255, 215, 0, 0.1);
+    position: relative;
+    animation: fadeInLuxury 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+.product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 15px rgba(255, 215, 0, 0.2);
+    border-color: rgba(255, 215, 0, 0.3);
+}
+
+.product-card:hover::before {
+    opacity: 1;
+}
+
+/* Staggered animation for product cards */
+.product-card:nth-child(1) { animation-delay: 0.1s; }
+.product-card:nth-child(2) { animation-delay: 0.2s; }
+.product-card:nth-child(3) { animation-delay: 0.3s; }
+.product-card:nth-child(4) { animation-delay: 0.4s; }
+.product-card:nth-child(5) { animation-delay: 0.5s; }
+.product-card:nth-child(6) { animation-delay: 0.6s; }
+.product-card:nth-child(7) { animation-delay: 0.7s; }
+.product-card:nth-child(8) { animation-delay: 0.8s; }
+
+.product-image-container {
+    overflow: hidden;
+    position: relative;
+}
+
+.product-image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+
+.product-info {
+    padding: 1.5rem;
+    position: relative;
+}
+
+.product-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--light);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.4s ease;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.product-card:hover .product-title {
+    color: var(--accent);
+}
+
+.price-info {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+
+.current-price {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: var(--gray);
+    font-size: 0.95rem;
+}
+
+.discount-badge {
+    background: linear-gradient(to right, var(--accent), var(--gold-light));
+    color: var(--text-on-gold);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    animation: goldPulse 2.5s infinite;
+    margin-left: auto;
+}
+
+/* Luxury Footer */
+footer {
+    background: var(--dark);
+    color: var(--light);
+    text-align: center;
+    padding: 3rem 1rem;
+    margin-top: 4rem;
+    position: relative;
+    border-top: 1px solid rgba(255, 215, 0, 0.1);
+    animation: fadeInLuxury 0.8s ease-out;
+}
+
+footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--accent), transparent);
+}
+
+.copyright {
+    font-size: 0.95rem;
+    color: var(--accent);
+    opacity: 0.8;
+    transition: all 0.4s ease;
+    letter-spacing: 0.5px;
+}
+
+.copyright:hover {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+/* Loading Animation */
+@keyframes spinGold {
+    0% { 
+        transform: rotate(0deg);
+        box-shadow: 0 0 0 rgba(255, 215, 0, 0.3);
     }
+    50% { 
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+    }
+    100% { 
+        transform: rotate(360deg);
+        box-shadow: 0 0 0 rgba(255, 215, 0, 0.3);
+    }
+}
 
+.loading-spinner {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 215, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--accent);
+    animation: spinGold 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+    margin: 3rem auto;
+    display: block;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+    #products-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .product-card:nth-child(4) { animation-delay: 0.1s; }
+    .product-card:nth-child(5) { animation-delay: 0.2s; }
+    .product-card:nth-child(6) { animation-delay: 0.3s; }
+    .product-card:nth-child(7) { animation-delay: 0.4s; }
+    .product-card:nth-child(8) { animation-delay: 0.5s; }
+}
+
+@media (max-width: 900px) {
+    .luxury-banner {
+        padding: 2rem 1.5rem;
+    }
+    
     .shop-title {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 2rem;
-      margin-bottom: 15px;
+        font-size: 1.8rem;
     }
-
+    
     .shop-description {
-      font-size: 1.1rem;
-      line-height: 1.6;
-    }
-
-    @keyframes gradientMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    /* Responsive Tweaks */
-    @media (max-width: 576px) {
-      .shop-title {
-        font-size: 1.5rem;
-      }
-
-      .shop-description {
         font-size: 1rem;
-      }
-
-      .animated-card {
-        padding: 15px;
-      }
     }
-  </style>
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: block;
+    }
+    
+    .desktop-nav {
+        display: none;
+    }
+    
+    .mobile-menu {
+        display: block;
+    }
+    
+    #products-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    main {
+        padding: 1.5rem;
+    }
+    
+    .product-image {
+        height: 180px;
+    }
+    
+    .product-card:nth-child(3) { animation-delay: 0.1s; }
+    .product-card:nth-child(4) { animation-delay: 0.2s; }
+    .product-card:nth-child(5) { animation-delay: 0.3s; }
+    .product-card:nth-child(6) { animation-delay: 0.4s; }
+    .product-card:nth-child(7) { animation-delay: 0.5s; }
+    .product-card:nth-child(8) { animation-delay: 0.6s; }
+    
+    .luxury-banner {
+        padding: 1.8rem 1.2rem;
+    }
+    
+    .shop-title {
+        font-size: 1.6rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.3rem;
+    }
+    
+    .header-container {
+        padding: 0.5rem;
+    }
+    
+    #products-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .product-image {
+        height: 150px;
+    }
+    
+    .mobile-menu {
+        right: 0.5rem;
+        min-width: 180px;
+    }
+    
+    .luxury-banner {
+        padding: 1.5rem 1rem;
+    }
+    
+    .shop-title {
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+    }
+    
+    .shop-description {
+        font-size: 0.9rem;
+    }
+    
+    .product-card {
+        animation-delay: 0s !important;
+    }
+    
+    .product-info {
+        padding: 1rem;
+    }
+    
+    .product-title {
+        font-size: 1rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .current-price {
+        font-size: 1.1rem;
+    }
+    
+    .original-price {
+        font-size: 0.85rem;
+    }
+    
+    .discount-badge {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.6rem;
+    }
+    
+    footer {
+        padding: 2rem 1rem;
+    }
+}
+
+/* Luxury Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(var(--accent), var(--gold-dark));
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
+
+/* Focus styles for accessibility */
+a:focus, button:focus, input:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+    </style>
 </head>
 <body>
+    <header>
+        <div class="header-container">
+            <div class="brand-nav">
+                <h1>FESTIVE SPIDER</h1>
+            </div>
+            
+            <button class="mobile-menu-btn" aria-label="Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="desktop-nav">
+                <div class="nav-links">
+                    <a href="/about">About Us</a>
+                    <a href="/contact">Contact</a>
+                </div>
+                <div class="login-link">
+                    <a href="/login">Login</a>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu Dropdown -->
+            <div class="mobile-menu">
+                <div class="nav-links">
+                    <a href="/about"><i class="fas fa-info-circle"></i> About Us</a>
+                    <a href="/contact"><i class="fas fa-envelope"></i> Contact</a>
+                </div>
+                <div class="login-link">
+                    <a href="/login"><i class="fas fa-user"></i> Login</a>
+                </div>
+            </div>
+        </div>
+    </header>
 
-<div class="container my-5">
-  <div class="animated-card p-4">
-    <h2 class="shop-title">✨ FESTIVE SPIDER</h2>
-    <p class="shop-description">
-      Welcome to our innovative shop! We offer premium products with unbeatable quality and exceptional service.
-      Discover exclusive deals and unique items tailored just for you.
-    </p>
-  </div>
-</div>
+    <div class="luxury-banner">
+        <h2 class="shop-title">✨ WED AURA </h2>
+        <p class="shop-description">
+             From the house festive spider 
+Elegant wedding wear specialist.
+        </p>
+    </div>
+    
+    <main>
+        <div id="products-container">
+            <!-- Products will be loaded here -->
+        </div>
+    </main>
+    
+    <footer>
+        <p class="copyright">&copy; <span id="current-year"></span> FESTIVE SPIDER. All rights reserved.</p>
+    </footer>
+    
+    <script>
+        // Mobile menu toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current year in footer
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            
+            // Toggle mobile menu
+            mobileMenuBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                mobileMenu.classList.toggle('active');
+                mobileMenuBtn.innerHTML = mobileMenu.classList.contains('active') 
+                    ? '<i class="fas fa-times"></i>' 
+                    : '<i class="fas fa-bars"></i>';
+            });
+            
+            // Close menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!mobileMenu.contains(e.target) && e.target !== mobileMenuBtn) {
+                    mobileMenu.classList.remove('active');
+                    mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+                }
+            });
+            
+            // Close menu when clicking on a link
+            document.querySelectorAll('.mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.remove('active');
+                    mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+                });
+            });
+            
+            // Load products
+            function loadProducts() {
+                const container = document.getElementById('products-container');
+                container.innerHTML = '<div class="loading-spinner"></div>';
+                
+                fetch('/api/products')
+                    .then(response => response.json())
+                    .then(products => {
+                        container.innerHTML = '';
+                        
+                       products.forEach((product, index) => {
+    const productDiv = document.createElement('div');
+    productDiv.className = 'product-card';
+    productDiv.style.animationDelay = (index * 0.1) + 's';
 
+    const discountedPrice = (product.mrp * (1 - product.offerPercentage / 100)).toFixed(2);
+    const originalPrice = product.mrp.toFixed(2);
+
+    productDiv.innerHTML = 
+        '<div class="product-image-container">' +
+            '<img src="' + product.mainImage.data + '" alt="' + product.name + '" class="product-image">' +
+        '</div>' +
+        '<div class="product-info">' +
+            '<h3 class="product-title">' + product.name + '</h3>' +
+            '<div class="price-info">' +
+                '<span class="current-price">' + discountedPrice + '</span>' +
+                '<span class="original-price">' + originalPrice + '</span>' +
+                '<span class="discount-badge">' + product.offerPercentage + '% OFF</span>' +
+            '</div>' +
+        '</div>';
+
+    productDiv.addEventListener('click', function () {
+        window.location.href = '/product/' + product._id;
+    });
+
+    container.appendChild(productDiv);
+});
+
+                    })
+                    .catch(error => {
+                        console.error('Error loading products:', error);
+                        container.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--accent);">Failed to load products. Please try again later.</p>';
+                    });
+            }
+            
+            // Load products when page loads
+            loadProducts();
+        });
+    </script>
 </body>
 </html>
-
-            
-            <main>
-                <div id="products-container">
-                    <!-- Products will be loaded here -->
-                </div>
-            </main>
-            
-            <footer>
-                <p class="copyright">&copy; ${new Date().getFullYear()} FESTIVE SPIDER. All rights reserved.</p>
-            </footer>
-            
-            <script>
-                // Mobile menu toggle functionality
-                document.addEventListener('DOMContentLoaded', function() {
-                    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-                    const mobileMenu = document.querySelector('.mobile-menu');
-                    
-                    // Toggle mobile menu
-                    mobileMenuBtn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        mobileMenu.classList.toggle('active');
-                        mobileMenuBtn.innerHTML = mobileMenu.classList.contains('active') 
-                            ? '<i class="fas fa-times"></i>' 
-                            : '<i class="fas fa-bars"></i>';
-                    });
-                    
-                    // Close menu when clicking outside
-                    document.addEventListener('click', function(e) {
-                        if (!mobileMenu.contains(e.target) && e.target !== mobileMenuBtn) {
-                            mobileMenu.classList.remove('active');
-                            mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-                        }
-                    });
-                    
-                    // Close menu when clicking on a link
-                    document.querySelectorAll('.mobile-menu a').forEach(link => {
-                        link.addEventListener('click', () => {
-                            mobileMenu.classList.remove('active');
-                            mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-                        });
-                    });
-                    
-                    // Load products
-                    function loadProducts() {
-                        fetch('/api/products')
-                            .then(response => response.json())
-                            .then(products => {
-                                const container = document.getElementById('products-container');
-                                container.innerHTML = '';
-                                
-                                products.forEach(product => {
-                                    const productDiv = document.createElement('div');
-                                    productDiv.className = 'product-card';
-                                    productDiv.innerHTML = \`
-                                        <img src="\${product.mainImage.data}" alt="\${product.name}" class="product-image">
-                                        <div class="product-info">
-                                            <h3 class="product-title">\${product.name}</h3>
-                                            <div class="price-info">
-                                               
-                                                <span class="discount-badge">\${product.offerPercentage}% OFF</span>
-                                            </div>
-                                        </div>
-                                    \`;
-                                    productDiv.addEventListener('click', () => {
-                                        window.location.href = \`/product/\${product._id}\`;
-                                    });
-                                    container.appendChild(productDiv);
-                                });
-                            })
-                            .catch(error => {
-                                console.error('Error loading products:', error);
-                                container.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:2rem;">Failed to load products. Please try again later.</p>';
-                            });
-                    }
-                    
-                    // Load products when page loads
-                    loadProducts();
-                });
-            </script>
-        </body>
-        </html>
     `);
 });
 
@@ -1740,6 +2041,7 @@ app.get('/product/:id', async (req, res) => {
                                     
                                     <div class="d-flex align-items-center mb-3">
                                         <span class="badge discount-badge text-white me-2">${product.offerPercentage}% OFF</span>
+                                        <span class="original-price me-2">₹${product.mrp}</span>
                                     </div>
                                     
                                     <div class="mb-4">
@@ -1751,6 +2053,9 @@ app.get('/product/:id', async (req, res) => {
                                         <input type="hidden" name="productId" value="${product._id}">
                                         <input type="hidden" name="productName" value="${product.name}">
                                         <input type="hidden" name="mrp" value="${product.mrp}">
+                                        
+                                    
+                                    
                                         <input type="hidden" id="minQuantity" value="${minQuantity}">
                                         
                                         <!-- Size and Quantity Selection -->
@@ -2590,6 +2895,7 @@ app.post('/checkout', async (req, res) => {
                             <input type="hidden" name="productId" value="${productId}">
                             <input type="hidden" name="productName" value="${productName}">
                             <input type="hidden" name="mrp" value="${mrp}">
+                            
                             <input type="hidden" name="sizes" value='${JSON.stringify(sizes).replace(/'/g, "\\'")}'>
                             ${customization ? `
                                 <input type="hidden" name="customizationType" value="${customization.type}">
@@ -2648,6 +2954,7 @@ app.post('/checkout', async (req, res) => {
             ${sizes.map(size => `
                 <p class="size-info">Size: ${size.size}, Qty: ${size.quantity}, Price: ₹${size.price * size.quantity}</p>
             `).join('')}
+            
             ${customization ? `
                 <div class="customization-info">
                     <p>Customization: ${customization.type}</p>
