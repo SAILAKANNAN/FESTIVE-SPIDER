@@ -3674,52 +3674,50 @@ app.post('/checkout', async (req, res) => {
 <script>
   const upiId = "7358862602@ybl";
   const name = "Mr. Sailakannan";
-  // Replace with your dynamic total if needed
-  const finalAmount = ${total + 100};
+  const finalAmount = ${total + 100}; // You can replace 500 with your dynamic total
 
-  var upiUrl = "upi://pay?pa=" + upiId + "&pn=" + encodeURIComponent(name) + "&am=" + finalAmount + "&cu=INR";
-  var qrUrl = "https://api.qrserver.com/v1/create-qr-code/?data=" + encodeURIComponent(upiUrl) + "&size=200x200";
+  const upiUrl = "upi://pay?pa=" + upiId + "&pn=" + encodeURIComponent(name) + "&am=" + finalAmount + "&cu=INR";
+  const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?data=" + encodeURIComponent(upiUrl) + "&size=200x200";
 
   document.getElementById("qrCode").src = qrUrl;
 
   function pay(app) {
-    var intentUrl = "";
+    const androidPackageNames = {
+      gpay: "com.google.android.apps.nbu.paisa.user",
+      phonepe: "com.phonepe.app",
+      paytm: "net.one97.paytm",
+      bhim: "in.org.npci.upiapp",
+      amazon: "in.amazon.mShop.android.shopping",
+      mobikwik: "com.mobikwik_new",
+      freecharge: "com.freecharge.android",
+      airtel: "com.myairtelapp",
+      fampay: "com.fampay.in"
+    };
 
-    var baseIntent = "intent://pay?pa=" + upiId + "&pn=" + encodeURIComponent(name) + "&am=" + finalAmount + "&cu=INR#Intent;scheme=upi;package=";
+    const packageName = androidPackageNames[app];
 
-    switch (app) {
-      case 'gpay':
-        intentUrl = baseIntent + "com.google.android.apps.nbu.paisa.user;end";
-        break;
-      case 'phonepe':
-        intentUrl = baseIntent + "com.phonepe.app;end";
-        break;
-      case 'paytm':
-        intentUrl = baseIntent + "net.one97.paytm;end";
-        break;
-      case 'bhim':
-        intentUrl = baseIntent + "in.org.npci.upiapp;end";
-        break;
-      case 'amazon':
-        intentUrl = baseIntent + "in.amazon.mShop.android.shopping;end";
-        break;
-      case 'mobikwik':
-        intentUrl = baseIntent + "com.mobikwik_new;end";
-        break;
-      case 'freecharge':
-        intentUrl = baseIntent + "com.freecharge.android;end";
-        break;
-      case 'airtel':
-        intentUrl = baseIntent + "com.myairtelapp;end";
-        break;
-      case 'fampay':
-        intentUrl = baseIntent + "com.fampay.in;end";
-        break;
+    // Android Chrome and other browsers that support intents
+    if (navigator.userAgent.toLowerCase().includes("android")) {
+      const intentUrl = "intent://pay?pa=" + upiId +
+        "&pn=" + encodeURIComponent(name) +
+        "&am=" + finalAmount +
+        "&cu=INR#Intent;scheme=upi;package=" + packageName + ";end";
+
+      window.location.href = intentUrl;
+
+    } else if (navigator.userAgent.toLowerCase().includes("iphone") || navigator.userAgent.toLowerCase().includes("ipad")) {
+      // iOS fallback – just open the UPI URL, user has to manually select the app
+      window.location.href = upiUrl;
+
+      // Optional alert for iOS users
+      alert("iOS does not support automatic UPI redirection. Please copy and paste this UPI ID: " + upiId + " into your payment app.");
+    } else {
+      // Desktop or unsupported
+      alert("This feature works best on a mobile device with a UPI app installed.");
     }
-
-    window.location.href = intentUrl;
   }
 </script>
+
                             
                             <button type="submit" class="submit-btn">Complete Order</button>
                         </form>
