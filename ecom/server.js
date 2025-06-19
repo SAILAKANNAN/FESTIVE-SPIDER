@@ -3672,8 +3672,8 @@ app.post('/checkout', async (req, res) => {
 </div>
 
 <script>
-  const upiId = "7358862602@ybl";
-  const name = "Mr. Sailakannan";
+  const upiId = "mohammedbinaas004@oksbi";
+  const name = "Festive Spider";
   const finalAmount = ${total + 100}; // You can replace 500 with your dynamic total
 
   const upiUrl = "upi://pay?pa=" + upiId + "&pn=" + encodeURIComponent(name) + "&am=" + finalAmount + "&cu=INR";
